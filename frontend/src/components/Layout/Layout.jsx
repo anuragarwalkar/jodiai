@@ -1,140 +1,262 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  Home, 
-  Users, 
-  Settings, 
-  Brain, 
-  Heart,
-  Zap,
-  Bell,
-  User
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Container,
+  IconButton,
+  Badge,
+  Avatar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  BottomNavigation,
+  BottomNavigationAction,
+  useMediaQuery,
+  useTheme,
+  Fade,
+} from '@mui/material';
+import {
+  Dashboard as DashboardIcon,
+  People as PeopleIcon,
+  Settings as SettingsIcon,
+  Psychology as PsychologyIcon,
+  Favorite as FavoriteIcon,
+  Notifications as NotificationsIcon,
+  Menu as MenuIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
 
 const Layout = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Dashboard' },
-    { path: '/profiles', icon: Users, label: 'Profiles' },
-    { path: '/requirements', icon: Settings, label: 'Requirements' },
-    { path: '/analysis', icon: Brain, label: 'AI Analysis' }
+    { path: '/', icon: DashboardIcon, label: 'Dashboard' },
+    { path: '/profiles', icon: PeopleIcon, label: 'Profiles' },
+    { path: '/requirements', icon: SettingsIcon, label: 'Requirements' },
+    { path: '/analysis', icon: PsychologyIcon, label: 'AI Analysis' }
   ];
 
   const isActive = (path) => location.pathname === path;
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMobileOpen(false);
+  };
+
+  const drawer = (
+    <Box sx={{ width: 250, mt: 2 }}>
+      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+          <FavoriteIcon sx={{ color: 'secondary.main', fontSize: 28 }} />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', background: theme.palette.primary.main, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            JodiAI
+          </Typography>
+        </Box>
+        <Typography variant="caption" color="text.secondary">
+          Smart Marriage Assistant
+        </Typography>
+      </Box>
+      <List>
+        {navItems.map((item) => (
+          <ListItem key={item.path} disablePadding>
+            <ListItemButton
+              selected={isActive(item.path)}
+              onClick={() => handleNavigation(item.path)}
+              sx={{
+                mx: 1,
+                my: 0.5,
+                borderRadius: 2,
+                '&.Mui-selected': {
+                  backgroundColor: 'primary.main',
+                  color: 'primary.contrastText',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.contrastText',
+                  },
+                },
+              }}
+            >
+              <ListItemIcon>
+                <item.icon />
+              </ListItemIcon>
+              <ListItemText primary={item.label} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-gray-800">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center gap-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* AppBar */}
+      <AppBar position="fixed" elevation={0}>
+        <Toolbar>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
             >
-              <div className="relative">
-                <Heart className="w-8 h-8 text-pink-500" />
-                <Zap className="w-4 h-4 text-cyan-400 absolute -top-1 -right-1" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
-                  JodiAI
-                </h1>
-                <p className="text-xs text-gray-400">Smart Marriage Assistant</p>
-              </div>
-            </motion.div>
+              <MenuIcon />
+            </IconButton>
+          )}
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+            <FavoriteIcon sx={{ color: 'secondary.main', fontSize: 28 }} />
+            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+              JodiAI
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+              Smart Marriage Assistant
+            </Typography>
+          </Box>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {navItems.map((item, index) => (
-                <motion.div
+          {!isMobile && (
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {navItems.map((item) => (
+                <IconButton
                   key={item.path}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  color={isActive(item.path) ? 'primary' : 'inherit'}
+                  onClick={() => navigate(item.path)}
+                  sx={{
+                    mx: 0.5,
+                    bgcolor: isActive(item.path) ? 'primary.main' : 'transparent',
+                    '&:hover': {
+                      bgcolor: isActive(item.path) ? 'primary.dark' : 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
                 >
-                  <Link
-                    to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                      isActive(item.path)
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                    }`}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </Link>
-                </motion.div>
+                  <item.icon />
+                </IconButton>
               ))}
-            </nav>
+            </Box>
+          )}
 
-            {/* User Actions */}
-            <div className="flex items-center gap-4">
-              <motion.button
-                className="relative p-2 text-gray-400 hover:text-white transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full"></span>
-              </motion.button>
-              
-              <motion.button
-                className="flex items-center gap-2 p-2 text-gray-400 hover:text-white transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <User className="w-5 h-5" />
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </header>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+            <IconButton color="inherit">
+              <Badge badgeContent={3} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+              U
+            </Avatar>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-      {/* Mobile Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-md border-t border-gray-800">
-        <div className="flex items-center justify-around py-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 p-3 rounded-lg transition-all duration-300 ${
-                isActive(item.path)
-                  ? 'text-cyan-400'
-                  : 'text-gray-400'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-xs font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
+      {/* Mobile Drawer */}
+      {isMobile && (
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: 250,
+            },
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+            <IconButton onClick={handleDrawerToggle}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          {drawer}
+        </Drawer>
+      )}
 
       {/* Main Content */}
-      <main className="pt-20 pb-20 md:pb-6 min-h-screen w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full px-4 sm:px-6 lg:px-8 py-6"
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          pt: { xs: 8, md: 10 },
+          pb: { xs: 8, md: 4 },
+          minHeight: '100vh',
+        }}
+      >
+        <Container maxWidth="xl" sx={{ height: '100%' }}>
+          <Fade in timeout={600}>
+            <Box>
+              {children}
+            </Box>
+          </Fade>
+        </Container>
+      </Box>
+
+      {/* Mobile Bottom Navigation */}
+      {isMobile && (
+        <BottomNavigation
+          value={location.pathname}
+          onChange={(event, newValue) => navigate(newValue)}
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTop: 1,
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+          }}
         >
-          {children}
-        </motion.div>
-      </main>
+          {navItems.map((item) => (
+            <BottomNavigationAction
+              key={item.path}
+              label={item.label}
+              value={item.path}
+              icon={<item.icon />}
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main',
+                },
+              }}
+            />
+          ))}
+        </BottomNavigation>
+      )}
 
       {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"></div>
-      </div>
-    </div>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          pointerEvents: 'none',
+          background: `
+            radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.05) 0%, transparent 70%)
+          `,
+        }}
+      />
+    </Box>
   );
 };
 
