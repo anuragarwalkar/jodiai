@@ -1,28 +1,41 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { transformJeevansathiData } from '../services/profileService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Transform Jeevansathi API response to our format
-router.post('/transform', async (req, res) => {
+// Get transformed profiles from data.json
+router.get('/profiles', async (req, res) => {
   try {
-    const { jeevansathiData, userPreferences } = req.body;
+    const dataPath = path.join(__dirname, '../data.json');
+    const rawData = fs.readFileSync(dataPath, 'utf8');
+    const jeevansathiData = JSON.parse(rawData);
     
-    if (!jeevansathiData) {
-      return res.status(400).json({ error: 'Jeevansathi data is required' });
-    }
+    // Get user preferences from query params if any
+    const userPreferences = {
+      ageRange: req.query.ageRange,
+      location: req.query.location,
+      education: req.query.education,
+      caste: req.query.caste,
+      income: req.query.income
+    };
 
     const transformedData = transformJeevansathiData(jeevansathiData, userPreferences);
     
     res.json({
       success: true,
       data: transformedData,
-      message: 'Data transformed successfully'
+      message: 'Profiles loaded successfully'
     });
   } catch (error) {
-    console.error('Error transforming profile data:', error);
+    console.error('Error loading profile data:', error);
     res.status(500).json({ 
-      error: 'Failed to transform profile data',
+      error: 'Failed to load profile data',
       message: error.message 
     });
   }

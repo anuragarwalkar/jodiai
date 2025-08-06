@@ -1,5 +1,5 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { PromptTemplate } from 'langchain/prompts';
+import { PromptTemplate } from '@langchain/core/prompts';
 import { LLMChain } from 'langchain/chains';
 
 // Initialize Gemini AI

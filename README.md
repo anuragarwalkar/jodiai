@@ -61,7 +61,7 @@ cp .env.example .env
 Edit `backend/.env`:
 ```env
 NODE_ENV=development
-PORT=5000
+PORT=3000
 GOOGLE_API_KEY=your_actual_gemini_api_key_here
 CORS_ORIGIN=http://localhost:5173
 RATE_LIMIT_WINDOW_MS=900000
@@ -89,7 +89,7 @@ The frontend `.env` is already configured for local development.
 cd backend
 npm run dev
 ```
-Backend will run on http://localhost:5000
+Backend will run on http://localhost:3000
 
 #### Start Frontend (Terminal 2)
 ```bash

@@ -35,7 +35,7 @@ export function transformJeevansathiData(jeevansathiData, userPreferences = {}) 
 
 function transformSingleProfile(profile) {
   return {
-    id: profile.profileid,
+    id: profile.profilechecksum || profile.username || 'unknown',
     username: profile.username,
     name: profile.name_of_user || 'Name not provided',
     age: extractAge(profile.age),

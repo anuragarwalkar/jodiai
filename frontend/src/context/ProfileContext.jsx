@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
+import { profileService } from '../services/api';
 
 const ProfileContext = createContext();
 
@@ -102,6 +103,16 @@ export function ProfileProvider({ children }) {
     dispatch({ type: 'CLEAR_PROFILES' });
   };
 
+  const loadProfiles = async (userPreferences = {}) => {
+    setLoading(true);
+    try {
+      const response = await profileService.getProfiles(userPreferences);
+      setProfiles(response.data);
+    } catch (error) {
+      setError(error.message || 'Failed to load profiles');
+    }
+  };
+
   const value = {
     ...state,
     setLoading,
@@ -111,7 +122,8 @@ export function ProfileProvider({ children }) {
     setCurrentProfile,
     updateProfile,
     setFilters,
-    clearProfiles
+    clearProfiles,
+    loadProfiles
   };
 
   return (

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -43,17 +43,24 @@ apiClient.interceptors.response.use(
 
 // Profile Services
 export const profileService = {
-  // Transform Jeevansathi data to our format
-  transformProfiles: async (jeevansathiData, userPreferences = {}) => {
+  // Get all profiles from backend (already transformed)
+  getProfiles: async (userPreferences = {}) => {
     try {
-      const response = await apiClient.post('/profiles/transform', {
-        jeevansathiData,
-        userPreferences
-      });
+      const queryParams = new URLSearchParams();
+      
+      // Add user preferences as query parameters
+      if (userPreferences.ageRange) queryParams.append('ageRange', userPreferences.ageRange);
+      if (userPreferences.location) queryParams.append('location', userPreferences.location);
+      if (userPreferences.education) queryParams.append('education', userPreferences.education);
+      if (userPreferences.caste) queryParams.append('caste', userPreferences.caste);
+      if (userPreferences.income) queryParams.append('income', userPreferences.income);
+      
+      const url = `/profiles/profiles${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const response = await apiClient.get(url);
       return response.data;
     } catch (error) {
-      console.error('Error transforming profiles:', error);
-      throw new Error(error.response?.data?.message || 'Failed to transform profiles');
+      console.error('Error fetching profiles:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch profiles');
     }
   },
 
